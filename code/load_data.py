@@ -25,7 +25,7 @@ def get_station_info(station_data_path):
     boundary = [ltt_min, lgt_min, ltt_max, lgt_max]
     
     # list of station latitude longitude
-    station_locations = list(zip(station_df['Latitude [deg]'], station_df['Longitude [deg]']))
+    station_locations = list(zip(station_df['Latitude [deg]'], station_df['Longitude [deg]'], station_df['LocationID']))
     
     return boundary, station_locations
 
@@ -53,6 +53,7 @@ def get_gee_info(start_date, end_date, boundary, latlong_list, select_bands=SELE
         def get_point_info(lttlgt_list):
             ltt = ee.Number(ee.List(lttlgt_list).get(0))
             lgt = ee.Number(ee.List(lttlgt_list).get(1))
+            station_id = ee.Number(ee.List(lttlgt_list).get(2))
             point = ee.Geometry.Point([lgt, ltt])
 
             daily_data = ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR').select(
@@ -61,11 +62,11 @@ def get_gee_info(start_date, end_date, boundary, latlong_list, select_bands=SELE
             reduced_value = daily_data.mean().reduceRegion(
                 reducer=ee.Reducer.mean(),
                 geometry=point,
-                scale=1
+                scale=0.5
             )
 
             # Add date and ltt/lgt info to the result
-            return ee.Dictionary(reduced_value).set('date', date.format('YYYY-MM-dd')).set('ltt', ltt).set('lgt', lgt)
+            return ee.Dictionary(reduced_value).set('date', date.format('YYYY-MM-dd')).set('ltt', ltt).set('lgt', lgt).set('station_id', station_id)
         
         # Map over all ltt/lgt tuples (converted to EE List)
         return ltt_lgt_ee_list.map(get_point_info)
