@@ -1,3 +1,11 @@
+# Large data
+data/*
+gee_data/*
+test.py
+
+# Large Weight
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
