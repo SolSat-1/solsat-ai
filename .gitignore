@@ -4,7 +4,7 @@ gee_data/*
 test.py
 
 # Large Weight
-
+weights/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
